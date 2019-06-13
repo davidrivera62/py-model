@@ -79,6 +79,11 @@ results = mod.fit()
 results.plot_diagnostics(figsize=(16, 8))
 plt.savefig('diagnosis.png')
 
+d = {'AIC':[results.aic],
+     'BIC':[results.bic]}
+aicbic = pd.DataFrame(data = d)
+aicbic.to_csv (r'aicbic.csv', index = None, header=True)
+
 #Data Fitted
 
 pred = results.get_prediction(start=pd.to_datetime(train.index[0]), dynamic=False)
