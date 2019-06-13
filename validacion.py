@@ -19,7 +19,7 @@ if aic < 710 and bic < 720:
     L = ["Yes"]
     file1.writelines(L)
     file1.close()
-    sys.exit(1)
+    sys.exit(0)
 else:
     file1 = open("r_AIC.txt","w")
     L = ["No"]
