@@ -1,0 +1,2 @@
+sonar.projectKey=py-dataops
+sonar.sources=.
