@@ -12,6 +12,7 @@ import itertools
 import numpy as np
 from sklearn.metrics import mean_squared_error
 from math import sqrt
+from pylab import rcParams
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -47,12 +48,12 @@ plt.ylabel('Price Frequency')
 plt.suptitle('Fedearroz Rice Price Analysis', fontsize=16)
 plt.savefig('TSoriginal.png')
 
-from pylab import rcParams
 rcParams['figure.figsize'] = 18, 8
 
 decomposition = sm.tsa.seasonal_decompose(arroz['Price'], model='additive')
 fig = decomposition.plot()
 plt.savefig('decomposition.png')
+
 
 # In[5]:
 
@@ -102,7 +103,7 @@ print('ARIMA{}x{}12 - AIC:{}'.format(list_param[list_aic.index(min(list_aic))],
 # In[8]:
 
 
-mod = sm.tsa.statespace.SARIMAX(train,order=(list_param[list_aic.index(min(list_aic))][0],
+mod = sm.tsa.statespace.SARIMAX(train, order=(list_param[list_aic.index(min(list_aic))][0],
                                              list_param[list_aic.index(min(list_aic))][1],
                                              list_param[list_aic.index(min(list_aic))][2]),
                                 seasonal_order=(list_param_seasonal[list_aic.index(min(list_aic))][0],
@@ -110,7 +111,14 @@ mod = sm.tsa.statespace.SARIMAX(train,order=(list_param[list_aic.index(min(list_
                                                 list_param_seasonal[list_aic.index(min(list_aic))][2],
                                                 12),
                                  enforce_stationarity=False, enforce_invertibility=False,).fit()
-mod.summary()
+
+plt.close('all')
+plt.rc('figure', figsize=(12, 7))
+plt.text(0.01, 0.05, str(mod.summary()), {'fontsize': 10}, fontproperties='monospace')
+# approach improved by OP -> monospace!
+plt.axis('off')
+plt.tight_layout()
+plt.savefig('Model_Results.png')
 
 
 # In[9]:
@@ -123,10 +131,10 @@ plt.savefig('diagnosis.png')
 # In[10]:
 
 
-d = {'AIC':[results.aic],
-     'BIC':[results.bic]}
+d = {'AIC': [results.aic],
+     'BIC': [results.bic]}
 aicbic = pd.DataFrame(data=d)
-aicbic.to_csv (r'aicbic.csv', index=None, header=True)
+aicbic.to_csv(r'aicbic.csv', index=None, header=True)
 
 
 # In[11]:
@@ -188,7 +196,7 @@ comparacion['Date'] = Arroz_Forecast.index
 comparacion['Forecast'] = Arroz_Forecast['Price']
 comparacion['Real'] = arroz[-n:]
 comparacion["Error"] = comparacion['Real'] - comparacion['Forecast']
-comparacion.to_csv(r'comparacion.csv', index = None, header=True)
+comparacion.to_csv(r'comparacion.csv', index=None, header=True)
 
 
 # In[16]:
@@ -210,7 +218,7 @@ def mean_absolute_percentage_error(y_true, y_pred):
 
 d = {'RMSE': [sqrt(mean_squared_error(comparacion['Real'],
                                      comparacion['Forecast']))],
-     'MAPE':[mean_absolute_percentage_error(comparacion['Real'],
+     'MAPE': [mean_absolute_percentage_error(comparacion['Real'],
                                             comparacion['Forecast'])]}
 
 
@@ -219,21 +227,3 @@ d = {'RMSE': [sqrt(mean_squared_error(comparacion['Real'],
 
 Error = pd.DataFrame(data=d)
 Error.to_csv(r'Error.csv', index=None, header=True)
-
-
-# In[20]:
-
-
-np.std(results.forecasts_error)
-
-
-# In[21]:
-
-
-Big_Error = pd.DataFrame(index=Arroz_Forecast.index, columns=['ratio'])
-
-
-# In[22]:
-
-
-Big_Error['ratio'] = comparacion['Error'] / (3.5*np.std(results.forecasts_error))
