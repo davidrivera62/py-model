@@ -14,7 +14,7 @@ aicbic = pd.read_csv("aicbic.csv")
 aic = aicbic['AIC'][0]
 bic = aicbic['BIC'][0]
 
-if aic < 800 and bic < 800:
+if aic < 738 and bic < 744:
     file1 = open("r_AIC.txt","w")
     L = ["Yes"]
     file1.writelines(L)
