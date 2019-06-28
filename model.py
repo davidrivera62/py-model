@@ -119,7 +119,7 @@ mod.plot_diagnostics(figsize=(16, 8))
 plt.savefig('diagnosis.png')
 
 
-
+mod.save("arroz.pickle")
 
 d = {'AIC': [mod.aic],
      'BIC': [mod.bic]}
