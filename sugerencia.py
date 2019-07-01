@@ -30,13 +30,13 @@ mod = sm.load('arroz.pickle')
 def alarmas(comparacion):
     comparacion['Alarma Signo'] = ""
     comparacion['Alarma Error'] = ""
-    
+
     for x in range(4,len(comparacion)+1):
         if comparacion['Error'].iloc[x-4] > 0 and comparacion['Error'].iloc[x-3] > 0 and comparacion['Error'].iloc[x-2] > 0 and comparacion['Error'].iloc[x-1] > 0 or comparacion['Error'].iloc[x-4] < 0 and comparacion['Error'].iloc[x-3] < 0 and comparacion['Error'].iloc[x-2] < 0 and comparacion['Error'].iloc[x-1] < 0:
             comparacion['Alarma Signo'].iloc[x-1] = "Alarma"
-        
+
     comparacion['Alarma Error'] = np.where(comparacion['Error'] / (3.5*np.std(mod.forecasts_error))>1,'Alarma','OK')
-    
+
     return comparacion
 
 
@@ -47,9 +47,9 @@ def Dataprep(n):
     # Web Scraping - https://pythonprogramminglanguage.com/web-scraping-with-pandas-and-beautifulsoup/
     res = requests.get("http://www.fedearroz.com.co/new/precios.php")
     soup = BeautifulSoup(res.content,'lxml')
-    table = soup.find_all('table')[0] 
+    table = soup.find_all('table')[0]
     df = pd.read_html(str(table))
-    
+
     #Data Wrangling
     arroz=df[0]
 
@@ -66,18 +66,18 @@ def Dataprep(n):
     arroz['Price']=arroz['Price']/1000
     arroz = arroz.set_index('Date')
     arroz.drop(arroz.tail(1).index,inplace=True)
-    
+
     #(Base: diciembre 2014=100)
-    IPP = pd.read_csv('Data/IPP.csv',sep=';',decimal=',')
+    IPP = pd.read_csv('IPP.csv',sep=';',decimal=',')
     IPP['Date'] = pd.to_datetime(IPP['Año(aaaa)-Mes(mm)'])
     IPP = IPP.set_index('Date').dropna()
-    
+
     arroz['Price'] = arroz['Price']*IPP['Factor']
     #arroz['Date'] = arroz.index
     #arroz = arroz[['Date','Price']]
-    
+
     train, test = arroz[:len(arroz)-n], arroz[len(arroz)-n:]
-    
+
     return train, test
 
 
@@ -111,7 +111,7 @@ def modelrice(train):
 
             except:
                 continue
-                
+
     mod = sm.tsa.statespace.SARIMAX(train,order=(list_param[list_aic.index(min(list_aic))][0],
                                              list_param[list_aic.index(min(list_aic))][1],
                                              list_param[list_aic.index(min(list_aic))][2]),
@@ -120,14 +120,14 @@ def modelrice(train):
                                                 list_param_seasonal[list_aic.index(min(list_aic))][2],
                                                 12),
                                  enforce_stationarity=False, enforce_invertibility=False,).fit()
-    
+
     return mod
 
 
 # In[9]:
 
 
-def mean_absolute_percentage_error(y_true, y_pred): 
+def mean_absolute_percentage_error(y_true, y_pred):
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
@@ -138,16 +138,16 @@ def mean_absolute_percentage_error(y_true, y_pred):
 n = 6
 train, test = Dataprep(n)
 mod = modelrice(train)
-   
+
 plt.close('all')
 plt.rc('figure', figsize=(12, 7))
 plt.text(0.01, 0.05, str(mod.summary()), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
 plt.axis('off')
 plt.tight_layout()
-    
+
 ### salida
 plt.savefig('Model_Results_new.png')
-            
+
 #Producing and visualizing forecasts
 
 pred_uc = mod.get_forecast(steps=n)
@@ -162,41 +162,37 @@ ax.set_xlabel('Fecha')
 ax.set_ylabel('Fedearroz Price')
 
 plt.legend()
-    
+
 ### salida
 plt.savefig('forecasting_real_new.png')
-    
+
 Arroz_Forecast = pd.DataFrame(pred_uc.predicted_mean)
 Arroz_Forecast.columns = ['Price']
-    
+
 comparacion = pd.DataFrame(index=Arroz_Forecast.index, columns=['Date'])
 comparacion['Date'] = Arroz_Forecast.index
 comparacion['Forecast'] = Arroz_Forecast['Price']
 comparacion['Real'] = test
 comparacion["Error"] = comparacion['Real'] - comparacion['Forecast']
-    
+
 d = {'RMSE':[sqrt(mean_squared_error(comparacion['Real'],comparacion['Forecast']))],
      'MAPE':[mean_absolute_percentage_error(comparacion['Real'],comparacion['Forecast'])]}
-    
+
 Error = pd.DataFrame(data = d)
 ### salida
 Error.to_csv (r'Error_real_new.csv', index = None, header=True)
-    
+
 comparacion['Alarma Signo'] = ""
 comparacion['Alarma Error'] = ""
-    
+
 for x in range(4,len(comparacion)+1):
     if comparacion['Error'].iloc[x-4] > 0 and comparacion['Error'].iloc[x-3] > 0 and comparacion['Error'].iloc[x-2] > 0 and comparacion['Error'].iloc[x-1] > 0 or comparacion['Error'].iloc[x-4] < 0 and comparacion['Error'].iloc[x-3] < 0 and comparacion['Error'].iloc[x-2] < 0 and comparacion['Error'].iloc[x-1] < 0:
         comparacion['Alarma Signo'].iloc[x-1] = "Alarma"
-    
-### salida    
+
+### salida
 comparacion['Alarma Error'] = np.where(comparacion['Error'] / (3.5*np.std(mod.forecasts_error))>1,'Alarma','OK')
-    
+
 comparacion.to_csv (r'comparacion_real_new.csv', index = None, header=True)
 
 
 # In[ ]:
-
-
-
-
