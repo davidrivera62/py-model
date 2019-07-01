@@ -45,7 +45,7 @@ arroz.drop(arroz.tail(1).index,inplace=True)
 
 
 #(Base: diciembre 2014=100)
-IPP = pd.read_csv('Data/IPP.csv',sep=';',decimal=',')
+IPP = pd.read_csv('IPP.csv',sep=';',decimal=',')
 IPP['Date'] = pd.to_datetime(IPP['Año(aaaa)-Mes(mm)'])
 IPP = IPP.set_index('Date').dropna()
 IPP = IPP.tail(4)
