@@ -16,7 +16,6 @@ import warnings
 import requests
 from bs4 import BeautifulSoup
 warnings.filterwarnings('ignore')
-from PIL import Image
 
 
 # In[19]:
