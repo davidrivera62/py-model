@@ -192,7 +192,7 @@ for x in range(4,len(comparacion)+1):
 ### salida
 comparacion['Alarma Error'] = np.where(comparacion['Error'] / (3.5*np.std(mod.forecasts_error))>1,'Alarma','OK')
 
-comparacion.to_csv (r'comparacion_real_new.csv', index = None, header=True)
+comparacion.to_csv (r'alarma_real_new.csv', index = None, header=True)
 
 
 # In[ ]:
