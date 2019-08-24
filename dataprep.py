@@ -72,7 +72,7 @@ trm = pd.read_csv('TRM.csv')
 trm['Date'] = pd.to_datetime(trm['Date'])
 trm['Date'].dt.strftime('%Y-%m-%d')
 trm = trm.set_index('Date').dropna()
-trm.drop(trm.tail(2).index,inplace=True) # drop last n row
+trm.drop(trm.tail(4).index,inplace=True) # drop last n row
 
 
 # In[19]:
@@ -82,7 +82,7 @@ trm.drop(trm.tail(2).index,inplace=True) # drop last n row
 IPP = pd.read_csv('IPP.csv',sep=';',decimal=',')
 IPP['Date'] = pd.to_datetime(IPP['Año(aaaa)-Mes(mm)'])
 IPP = IPP.set_index('Date').dropna()
-IPP.drop(IPP.tail(4).index,inplace=True) # drop last n row
+IPP.drop(IPP.tail(2).index,inplace=True) # drop last n row
 
 
 # In[20]:
