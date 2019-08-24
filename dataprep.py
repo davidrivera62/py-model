@@ -72,7 +72,7 @@ trm = pd.read_csv('TRM.csv')
 trm['Date'] = pd.to_datetime(trm['Date'])
 trm['Date'].dt.strftime('%Y-%m-%d')
 trm = trm.set_index('Date').dropna()
-trm.drop(trm.tail(4).index,inplace=True) # drop last n row
+trm.drop(trm.tail(2).index,inplace=True) # drop last n row
 
 
 # In[19]:

@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 # Web Scraping - https://pythonprogramminglanguage.com/web-scraping-with-pandas-and-beautifulsoup/
 res = requests.get("http://www.fedearroz.com.co/new/precios.php")
 soup = BeautifulSoup(res.content,'lxml')
-table = soup.find_all('table')[0] 
+table = soup.find_all('table')[0]
 df = pd.read_html(str(table))
 
 
@@ -48,7 +48,7 @@ arroz.drop(arroz.tail(1).index,inplace=True)
 IPP = pd.read_csv('IPP.csv',sep=';',decimal=',')
 IPP['Date'] = pd.to_datetime(IPP['Año(aaaa)-Mes(mm)'])
 IPP = IPP.set_index('Date').dropna()
-IPP = IPP.tail(4)
+IPP = IPP.tail(2)
 
 
 # In[22]:
@@ -66,7 +66,3 @@ arroz.to_csv (r'data_real.csv', index = None, header=True)
 
 
 # In[ ]:
-
-
-
-
