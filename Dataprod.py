@@ -37,8 +37,8 @@ arroz['Date']=pd.to_datetime((arroz.Year*10000+arroz.Month*100+1).apply(str),for
 arroz=arroz[['Date','Price']]
 arroz['Price']=arroz['Price']/1000
 arroz = arroz.set_index('Date')
-arroz = arroz.tail(5)
-arroz.drop(arroz.tail(1).index,inplace=True)
+arroz = arroz.tail(8)
+arroz.drop(arroz.tail(3).index,inplace=True)
 
 
 # In[21]:
@@ -48,7 +48,7 @@ arroz.drop(arroz.tail(1).index,inplace=True)
 IPP = pd.read_csv('IPP.csv',sep=';',decimal=',')
 IPP['Date'] = pd.to_datetime(IPP['Año(aaaa)-Mes(mm)'])
 IPP = IPP.set_index('Date').dropna()
-IPP = IPP.tail(2)
+#IPP = IPP.tail(2)
 
 
 # In[22]:
