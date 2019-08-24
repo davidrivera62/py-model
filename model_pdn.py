@@ -54,7 +54,7 @@ plt.savefig('forecasting_real.png')
 # In[41]:
 
 
-Arroz_Forecast = pd.DataFrame(pred_uc.predicted_mean.tail(4))
+Arroz_Forecast = pd.DataFrame(pred_uc.predicted_mean.tail(5))
 Arroz_Forecast.columns = ['Price']
 
 
