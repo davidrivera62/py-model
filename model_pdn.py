@@ -30,17 +30,23 @@ arroz = arroz.set_index('Date')
 mod = sm.load('arroz.pickle')
 
 
+# In[39]:
+
+
+pred= mod.get_forecast(steps = 4+6)
+pred_ci = pred.conf_int()
+
 
 # In[40]:
 
 
 #Producing and visualizing forecasts
 
-pred_uc = mod.get_forecast(steps=8)
+pred_uc = mod.get_forecast(steps=6)
 pred_ci = pred_uc.conf_int()
 
 ax = arroz.plot(marker='o',label='observed',figsize=(14, 7))
-pred_uc.predicted_mean.tail(5).plot(marker='*',ax=ax, label='Forecast',)
+pred_uc.predicted_mean.plot(marker='*',ax=ax, label='Forecast',)
 ax.fill_between(pred_ci.index,
                 pred_ci.iloc[:, 0],
                 pred_ci.iloc[:, 1], color='k', alpha=.2)
@@ -54,7 +60,7 @@ plt.savefig('forecasting_real.png')
 # In[41]:
 
 
-Arroz_Forecast = pd.DataFrame(pred_uc.predicted_mean.tail(5))
+Arroz_Forecast = pd.DataFrame(pred_uc.predicted_mean.tail(4))
 Arroz_Forecast.columns = ['Price']
 
 
