@@ -45,14 +45,15 @@ def alarmas(comparacion):
 
 def Dataprep(n):
     # Web Scraping - https://pythonprogramminglanguage.com/web-scraping-with-pandas-and-beautifulsoup/
-    res = requests.get("http://www.fedearroz.com.co/new/precios.php")
-    soup = BeautifulSoup(res.content,'lxml')
-    table = soup.find_all('table')[0]
-    df = pd.read_html(str(table))
+    url = 'http://www.fedearroz.com.co/new/precios.php'
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    tbl = soup.find("table")
+    df = pd.read_html(str(tbl))[0]
+    df = df.drop([0,2,4,6,8,10,12,14,16,18,20,22])
 
     #Data Wrangling
-    arroz=df[0]
-
+    arroz=df
     arroz['Mes'] = ['1','2','3','4','5','6','7','8','9','10','11','12']
     arroz = pd.melt(arroz, id_vars=['Mes'],var_name='Year',value_name='Price')
     arroz = arroz.rename(columns={'Mes': 'Month'})
@@ -65,14 +66,13 @@ def Dataprep(n):
     arroz=arroz[['Date','Price']]
     arroz['Price']=arroz['Price']/1000
     arroz = arroz.set_index('Date')
-    arroz.drop(arroz.tail(1).index,inplace=True)
 
     #(Base: diciembre 2014=100)
-    IPP = pd.read_csv('IPP.csv',sep=';',decimal=',')
-    IPP['Date'] = pd.to_datetime(IPP['Año(aaaa)-Mes(mm)'])
-    IPP = IPP.set_index('Date').dropna()
+    #IPP = pd.read_csv('IPP.csv',sep=';',decimal=',')
+    #IPP['Date'] = pd.to_datetime(IPP['Año(aaaa)-Mes(mm)'])
+    #IPP = IPP.set_index('Date').dropna()
 
-    arroz['Price'] = arroz['Price']*IPP['Factor']
+    #arroz['Price'] = arroz['Price']*IPP['Factor']
     #arroz['Date'] = arroz.index
     #arroz = arroz[['Date','Price']]
 
